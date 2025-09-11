@@ -38,6 +38,11 @@ return {
 				"<cmd>EasyAddProject<cr>",
 				desc = "Add Current Project",
 			},
+			{
+				"<leader>e",
+				"<cmd>EasyToggleExplorer<cr>",
+				desc = "Toggle Explorer",
+			},
 		},
 		opts = {}, -- Use default configuration
 	},

@@ -67,13 +67,6 @@ return {
 		},
 		keys = {
 			{
-				"<leader>e",
-				function()
-					Snacks.explorer()
-				end,
-				desc = "Explorer",
-			},
-			{
 				"<leader>.",
 				function()
 					Snacks.scratch()

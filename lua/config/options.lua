@@ -20,9 +20,35 @@ opt.smartcase = true -- Don't ignore case with capitals
 
 -- UI cleanup
 opt.showmode = false
-opt.laststatus = 3
-opt.cmdheight = 0
+opt.laststatus = 2 -- Force statusline to always show
+opt.cmdheight = vim.g.neovide and 1 or 0 -- Show cmdline in Neovide, hide in terminal
 
 -- Clipboard
 opt.clipboard = "unnamedplus" -- Use system clipboard by default
 
+-- Neovide settings (only apply if running in Neovide)
+if vim.g.neovide then
+	vim.g.neovide_cursor_animation_length = 0 -- Disable cursor animation
+	vim.g.neovide_cursor_trail_size = 0 -- Disable cursor trail
+	vim.g.neovide_scroll_animation_length = 0 -- Disable scroll animation
+	vim.g.neovide_position_animation_length = 0 -- Disable window position animation
+
+	-- Fix statusline visibility in Neovide
+	-- vim.opt.laststatus = 2 -- Force statusline to always show
+
+	-- -- Force lualine refresh after startup to fix rendering issues
+	-- vim.defer_fn(function()
+	-- 	if pcall(require, "lualine") then
+	-- 		require("lualine").refresh()
+	-- 	end
+	-- end, 200)
+
+	-- 	-- Handle window resize events to fix statusline on maximize/restore
+	-- 	vim.api.nvim_create_autocmd("VimResized", {
+	-- 		callback = function()
+	-- 			if pcall(require, "lualine") then
+	-- 				require("lualine").refresh()
+	-- 			end
+	-- 		end,
+	-- 	})
+end
