@@ -24,7 +24,6 @@ return {
               text_align = "left",
             }
           },
- 
         close_command = function(n) Snacks.bufdelete(n) end,
         right_mouse_command = function(n) Snacks.bufdelete(n) end,
       },
@@ -50,6 +49,12 @@ return {
         -- Inactive window separator states (when focus is on explorer)
         separator_visible = {
           fg = "#000000", -- Black visual background for visible separators when inactive
+          bg = { attribute = "bg", highlight = "Normal" }, -- Use Normal bg color for corners
+        },
+        -- Active tab when window is not focused (make it same as focused)
+        buffer_visible = {
+          bg = { attribute = "bg", highlight = "Normal" }, -- Use Normal bg color
+          fg = { attribute = "fg", highlight = "Normal" }, -- Use Normal fg color
         },
       },
     })

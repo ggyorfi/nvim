@@ -26,6 +26,9 @@ opt.cmdheight = vim.g.neovide and 1 or 0 -- Show cmdline in Neovide, hide in ter
 -- Clipboard
 opt.clipboard = "unnamedplus" -- Use system clipboard by default
 
+-- Enable highlighting for unsaved changes
+vim.opt.signcolumn = "yes"
+
 -- Neovide settings (only apply if running in Neovide)
 if vim.g.neovide then
 	vim.g.neovide_cursor_animation_length = 0 -- Disable cursor animation

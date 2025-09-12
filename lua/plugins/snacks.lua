@@ -8,8 +8,9 @@ return {
 			bigfile = { enabled = false }, -- Disable features on big files for performance
 			notifier = {
 				enabled = true, -- Enable for debugging
+				timeout = 2000,
 			}, -- Better vim.notify() with nice animations
-			messages = { enabled = false }, -- Don't interfere with :messages
+			messages = { enabled = true }, -- Handle :messages
 			quickfile = { enabled = true }, -- Fast file operations
 			statuscolumn = { enabled = false }, -- Enhanced line number column with git signs
 			words = { enabled = true }, -- Highlight other instances of word under cursor
