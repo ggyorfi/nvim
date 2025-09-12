@@ -29,6 +29,7 @@ return {
 				ui_select = true, -- Enable Snacks picker for vim.ui.select
 				sources = {
 					explorer = {
+						auto_close = false, -- Don't auto-close when buffers are deleted
 						hidden = true, -- Show hidden files
 						ignored = true, -- Show ignored files
 						exclude = {
@@ -55,6 +56,19 @@ return {
 								box = "vertical",
 								-- Only show file list (no input/search box)
 								{ win = "list", border = "none" },
+							},
+						},
+						-- Disable ESC key in both input and list windows
+						win = {
+							input = {
+								keys = {
+									["<esc>"] = false,
+								},
+							},
+							list = {
+								keys = {
+									["<esc>"] = false,
+								},
 							},
 						},
 					},
