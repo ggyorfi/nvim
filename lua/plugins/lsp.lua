@@ -85,6 +85,9 @@ return {
 			"ibhagwan/fzf-lua",
 		},
 		config = function()
+			-- Disable Neovim's default LSP mappings
+			vim.g.lsp_handlers_enabled = false
+
 			-- Manual lua_ls setup (since removed from mason-lspconfig)
 			require("lspconfig").lua_ls.setup({
 				settings = {
@@ -164,16 +167,42 @@ return {
 					-- Navigation keymaps (use fzf-lua if available, fallback to LSP)
 					local fzf_available = pcall(require, "fzf-lua")
 					if fzf_available then
-						map("gd", require("fzf-lua").lsp_definitions, "Goto Definition")
-						map("gr", require("fzf-lua").lsp_references, "Goto References")
-						map("gI", require("fzf-lua").lsp_implementations, "Goto Implementation")
-						map("gy", require("fzf-lua").lsp_typedefs, "Type Definition")
+						local fzf = require("fzf-lua")
+						map("gd", fzf.lsp_definitions, "Goto Definition")
+						map("gI", fzf.lsp_implementations, "Goto Implementation")
+						map("gy", fzf.lsp_typedefs, "Type Definition")
 					else
 						map("gd", vim.lsp.buf.definition, "Goto Definition")
-						map("gr", vim.lsp.buf.references, "Goto References")
 						map("gI", vim.lsp.buf.implementation, "Goto Implementation")
 						map("gy", vim.lsp.buf.type_definition, "Type Definition")
 					end
+
+					-- Handle gr with delay to override Neovim defaults
+					vim.defer_fn(function()
+						-- Delete all gr* mappings first (both buffer and global)
+						pcall(vim.keymap.del, "n", "grr", { buffer = event.buf })
+						pcall(vim.keymap.del, "n", "gra", { buffer = event.buf })
+						pcall(vim.keymap.del, "n", "grn", { buffer = event.buf })
+						pcall(vim.keymap.del, "n", "gri", { buffer = event.buf })
+						pcall(vim.keymap.del, "n", "grt", { buffer = event.buf })
+
+						-- Also try global deletion
+						pcall(vim.keymap.del, "n", "grr")
+						pcall(vim.keymap.del, "n", "gra")
+						pcall(vim.keymap.del, "n", "grn")
+						pcall(vim.keymap.del, "n", "gri")
+						pcall(vim.keymap.del, "n", "grt")
+
+						-- Then set our gr mapping with fzf-lua
+						vim.keymap.set("n", "gr", function()
+							require("fzf-lua").lsp_references({ includeDeclaration = false })
+						end, {
+							buffer = event.buf,
+							desc = "LSP: Goto References",
+							silent = true,
+							noremap = true
+						})
+					end, 150) -- 150ms delay to ensure it runs after defaults
 
 					map("gD", vim.lsp.buf.declaration, "Goto Declaration")
 					map("K", vim.lsp.buf.hover, "Hover Documentation")
