@@ -7,6 +7,8 @@ return {
     config = function()
   local bufferline = require("bufferline")
 
+  -- Define custom highlight group for pin icon
+  vim.api.nvim_set_hl(0, "BufferLinePinIcon", { fg = "#f38ba8" })
 
     bufferline.setup({
       options = {
@@ -26,6 +28,22 @@ return {
           },
         close_command = function(n) Snacks.bufdelete(n) end,
         right_mouse_command = function(n) Snacks.bufdelete(n) end,
+        -- Custom icons
+        indicator = {
+          style = "icon",
+        },
+        -- Pin configuration
+        groups = {
+          items = {
+            require('bufferline.groups').builtin.pinned:with({
+              icon = "%#BufferLinePinIcon#󰐃%*",
+            })
+          }
+        },
+        buffer_close_icon = "󰅖",
+        modified_icon = "●",
+        left_trunc_marker = "󰁍",
+        right_trunc_marker = "󰁔",
       },
       highlights = {
         fill = {

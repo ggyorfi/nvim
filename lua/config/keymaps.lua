@@ -32,3 +32,15 @@ map("t", "<C-t>", "<c-\\><c-n><cmd>close<cr>", { desc = "Toggle terminal" })
 
 -- Terminal keymaps
 map("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Enter normal mode" })
+
+-- Command-line keymaps - make Ctrl+P/N behave like Up/Down (prefix search)
+map("c", "<C-p>", "<Up>", { desc = "Previous command (prefix search)" })
+map("c", "<C-n>", "<Down>", { desc = "Next command (prefix search)" })
+
+-- Buffer management
+map("n", "<leader>bc", "<cmd>EasyCloseBuffer<cr>", { desc = "Close buffer" })
+map("n", "<leader>bC", "<cmd>EasyCloseBuffer!<cr>", { desc = "Close buffer (force)" })
+map("n", "<leader>bp", "<cmd>BufferLineTogglePin<cr>", { desc = "Toggle pin buffer" })
+map("n", "<leader>b<", "<cmd>BufferLineMovePrev<cr>", { desc = "Move buffer left" })
+map("n", "<leader>b>", "<cmd>BufferLineMoveNext<cr>", { desc = "Move buffer right" })
+map("n", "<leader>ba", "<cmd>EasyCloseAllSaved<cr>", { desc = "Close all saved buffers" })

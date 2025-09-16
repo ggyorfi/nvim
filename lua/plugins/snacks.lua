@@ -16,6 +16,16 @@ return {
 			words = { enabled = true }, -- Highlight other instances of word under cursor
 			explorer = { enabled = true }, -- File explorer with tree view and operations
 			input = { enabled = true }, -- Enhanced vim.ui.input with proper sizing
+			scratch = {
+				autowrite = true,
+				win = {
+					-- keep it relative to the editor so it layers above sidebars
+					relative = "editor",
+					zindex = 1000, -- bump higher if needed, e.g. 2000
+					border = "single", -- optional
+					backdrop = false, -- << stop dimming/hiding layouts underneath
+				},
+			},
 			terminal = {
 				win = {
 					position = "bottom",

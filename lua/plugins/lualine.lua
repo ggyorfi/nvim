@@ -83,14 +83,14 @@ return {
 			-- Keep a cached caret HL that inverts the component's colors
 			local function update_caret_hl()
 				-- Cursor with black text on white background
-				vim.api.nvim_set_hl(0, "LualineCmdCursor", { 
-					fg = "#000000",  -- black text
-					bg = "#ffffff"   -- white background
+				vim.api.nvim_set_hl(0, "LualineCmdCursor", {
+					fg = "#000000", -- black text
+					bg = "#ffffff", -- white background
 				})
 				-- Also create highlight for component text
 				vim.api.nvim_set_hl(0, "LualineCmdText", {
-					fg = "#fab387",  -- orange text
-					bg = "#181825"   -- dark background
+					fg = "#fab387", -- orange text
+					bg = "#181825", -- dark background
 				})
 			end
 
@@ -98,6 +98,17 @@ return {
 			vim.api.nvim_create_autocmd({ "ModeChanged", "ColorScheme", "WinEnter", "BufEnter" }, {
 				callback = update_caret_hl,
 			})
+
+			----------------------------------------------------------------
+			-- Macro recording component
+			----------------------------------------------------------------
+			local function macro_recording()
+				local reg = vim.fn.reg_recording()
+				if reg == "" then
+					return ""
+				end
+				return "● @" .. reg
+			end
 
 			----------------------------------------------------------------
 			-- Fake cmdline component (single-cell caret, no width changes)
@@ -129,7 +140,14 @@ return {
 
 				local tail = s:sub(pos + 1)
 				-- Use explicit highlight groups to maintain colors
-				return "%#LualineCmdText#" .. prefix .. before .. "%#LualineCmdCursor#" .. head .. "%#LualineCmdText#" .. tail .. "%*"
+				return "%#LualineCmdText#"
+					.. prefix
+					.. before
+					.. "%#LualineCmdCursor#"
+					.. head
+					.. "%#LualineCmdText#"
+					.. tail
+					.. "%*"
 			end
 
 			----------------------------------------------------------------
@@ -161,7 +179,18 @@ return {
 							end,
 						},
 					},
-					lualine_x = { "encoding", "fileformat", "filetype" },
+					lualine_x = {
+						{
+							macro_recording,
+							cond = function()
+								return vim.fn.reg_recording() ~= ""
+							end,
+							color = { fg = "#f38ba8" }, -- Red color for the recording indicator
+						},
+						"encoding",
+						"fileformat",
+						"filetype",
+					},
 					lualine_y = { "progress" },
 					lualine_z = { "location" },
 				},
@@ -182,23 +211,20 @@ return {
 				pcall(require("lualine").refresh, { place = { "statusline" } })
 			end
 
-			vim.api.nvim_create_autocmd(
-				{
-					"CmdlineEnter",
-					"CmdlineChanged",
-					"CmdlineLeave",
-					"CmdwinEnter",
-					"CmdwinLeave",
-					"ModeChanged",
-					"ColorScheme",
-				},
-				{
-					callback = function()
-						update_caret_hl()
-						refresh()
-					end,
-				}
-			)
+			vim.api.nvim_create_autocmd({
+				"CmdlineEnter",
+				"CmdlineChanged",
+				"CmdlineLeave",
+				"CmdwinEnter",
+				"CmdwinLeave",
+				"ModeChanged",
+				"ColorScheme",
+			}, {
+				callback = function()
+					update_caret_hl()
+					refresh()
+				end,
+			})
 
 			-- Extra responsiveness with ext_cmdline (safe no-op if unsupported)
 			-- Skip in Neovide to avoid compatibility issues
