@@ -25,7 +25,7 @@ return {
         yaml = { "prettier" },
         markdown = { "prettier" },
         python = { "black", "isort" },
-        lua = { "stylua" },
+        lua = { "stylua" },  -- stylua installed via Homebrew (not Mason)
         go = { "gofumpt" },
       },
       format_on_save = {

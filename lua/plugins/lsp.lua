@@ -17,7 +17,7 @@ return {
 					"eslint_d",
 					"black",
 					"isort",
-					"stylua",
+					-- "stylua",  -- Removed: causes LSP detection issues, install manually
 					"gofumpt",
 				},
 			})
@@ -52,7 +52,7 @@ return {
 					if server_name == "ts_ls" then
 						return
 					end
-					require("lspconfig")[server_name].setup({})
+					vim.lsp.config(server_name, {})
 				end,
 			},
 		},
@@ -89,7 +89,7 @@ return {
 			vim.g.lsp_handlers_enabled = false
 
 			-- Manual lua_ls setup (since removed from mason-lspconfig)
-			require("lspconfig").lua_ls.setup({
+			vim.lsp.config('lua_ls', {
 				settings = {
 					Lua = {
 						runtime = { version = "LuaJIT" },

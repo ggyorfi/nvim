@@ -14,7 +14,7 @@ return {
       options = {
         style_preset = bufferline.style_preset.no_italic,
         numbers = function(opts) return opts.ordinal end,
-        separator_style = vim.g.neovide and "slant" or "padded_slant",
+        separator_style = "slant",
         always_show_bufferline = true,
         diagnostics = "nvim_lsp",
         custom_filter = function(bufnr) return vim.bo[bufnr].buftype ~= "terminal" end,
