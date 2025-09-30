@@ -43,6 +43,11 @@ return {
 				"<cmd>EasyToggleExplorer<cr>",
 				desc = "Toggle Explorer",
 			},
+			{
+				"<leader>fm",
+				"<cmd>EasyMoveToFolder<cr>",
+				desc = "Move to Folder",
+			},
 		},
 		opts = {}, -- Use default configuration
 	},

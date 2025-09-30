@@ -8,13 +8,14 @@ return {
 			bigfile = { enabled = false }, -- Disable features on big files for performance
 			notifier = {
 				enabled = true, -- Enable for debugging
-				timeout = 2000,
+				timeout = 5000, -- 5 seconds
 			}, -- Better vim.notify() with nice animations
 			messages = { enabled = true }, -- Handle :messages
 			quickfile = { enabled = true }, -- Fast file operations
 			statuscolumn = { enabled = false }, -- Enhanced line number column with git signs
 			words = { enabled = true }, -- Highlight other instances of word under cursor
 			explorer = { enabled = true }, -- File explorer with tree view and operations
+			rename = { enabled = true }, -- LSP-integrated file rename/move
 			input = { enabled = true }, -- Enhanced vim.ui.input with proper sizing
 			scratch = {
 				autowrite = true,
