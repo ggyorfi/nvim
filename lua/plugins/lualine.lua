@@ -4,94 +4,12 @@ return {
 		event = "VeryLazy",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
-			-- Optional: hide builtin cmdline (uncomment if you only want the fake one)
-			-- vim.o.cmdheight = 0
-
 			----------------------------------------------------------------
-			-- Helpers to read theme colors from lualine's groups per mode
+			-- Highlights for the cmdline component
 			----------------------------------------------------------------
-			local function mode_slug()
-				local m = vim.fn.mode(1)
-				if m:find("^i") then
-					return "insert"
-				end
-				if m:find("^[vV\22]") then
-					return "visual"
-				end -- \22 = Ctrl-V
-				if m:find("^R") then
-					return "replace"
-				end
-				if m:find("^c") then
-					return "command"
-				end
-				if m:find("^[sS\19]") then
-					return "visual"
-				end -- select -> visual palette
-				if m:find("^t") then
-					return "terminal"
-				end
-				return "normal"
-			end
-
-			local function get_hl(name)
-				-- nvim 0.10+: returns ints; follow links if needed
-				if vim.api.nvim_get_hl then
-					local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name, link = false })
-					if ok and hl and (hl.fg or hl.bg) then
-						return hl
-					end
-					ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name, link = true })
-					if ok and hl then
-						if hl.link then
-							local ok2, r = pcall(vim.api.nvim_get_hl, 0, { name = hl.link, link = false })
-							if ok2 and r then
-								return r
-							end
-						end
-						return hl
-					end
-				end
-				-- nvim 0.9 fallback
-				if vim.api.nvim_get_hl_by_name then
-					local ok, hl = pcall(vim.api.nvim_get_hl_by_name, name, true)
-					if ok and hl then
-						return hl
-					end
-				end
-				return {}
-			end
-
-			local function to_hex(n)
-				return type(n) == "number" and string.format("#%06x", n) or n
-			end
-
-			-- Compute component colors from the theme's lualine groups
-			local function current_section_colors()
-				local grp = "lualine_c_" .. mode_slug()
-				local hl = get_hl(grp)
-				local fg = to_hex(hl.fg)
-				local bg = to_hex(hl.bg)
-				-- Fallbacks
-				if not (fg or bg) then
-					hl = get_hl("StatusLine")
-					fg = to_hex(hl.fg)
-					bg = to_hex(hl.bg)
-				end
-				return { fg = fg, bg = bg }
-			end
-
-			-- Keep a cached caret HL that inverts the component's colors
 			local function update_caret_hl()
-				-- Cursor with black text on white background
-				vim.api.nvim_set_hl(0, "LualineCmdCursor", {
-					fg = "#000000", -- black text
-					bg = "#ffffff", -- white background
-				})
-				-- Also create highlight for component text
-				vim.api.nvim_set_hl(0, "LualineCmdText", {
-					fg = "#fab387", -- orange text
-					bg = "#181825", -- dark background
-				})
+				vim.api.nvim_set_hl(0, "LualineCmdCursor", { fg = "#000000", bg = "#ffffff" })
+				vim.api.nvim_set_hl(0, "LualineCmdText", { fg = "#fab387", bg = "#181825" })
 			end
 
 			update_caret_hl()
@@ -111,8 +29,12 @@ return {
 			end
 
 			----------------------------------------------------------------
-			-- Fake cmdline component (single-cell caret, no width changes)
+			-- Cmdline component with % escaping
 			----------------------------------------------------------------
+			local function esc_percent(s)
+				return (s or ""):gsub("%%", "%%%%")
+			end
+
 			local function cmdline_component()
 				local t = vim.fn.getcmdtype()
 				if t == "" then
@@ -121,7 +43,7 @@ return {
 
 				local prefix = ({ [":"] = ":", ["/"] = "/", ["?"] = "?", ["="] = "=", ["@"] = "@" })[t] or t
 				local s = vim.fn.getcmdline()
-				local pos = vim.fn.getcmdpos() -- 1-based
+				local pos = vim.fn.getcmdpos()
 
 				if pos < 1 then
 					pos = 1
@@ -130,16 +52,14 @@ return {
 					pos = #s + 1
 				end
 
-				local before = s:sub(1, pos - 1)
-				local head = s:sub(pos, pos)
+				local before = esc_percent(s:sub(1, pos - 1))
+				local head = esc_percent(s:sub(pos, pos))
 
-				-- At EOL: exactly one highlighted space
 				if head == "" then
 					return "%#LualineCmdText#" .. prefix .. before .. "%#LualineCmdCursor# %*"
 				end
 
-				local tail = s:sub(pos + 1)
-				-- Use explicit highlight groups to maintain colors
+				local tail = esc_percent(s:sub(pos + 1))
 				return "%#LualineCmdText#"
 					.. prefix
 					.. before
@@ -172,9 +92,7 @@ return {
 							end,
 							padding = { left = 0, right = 0 },
 							separator = "",
-							-- Color the WHOLE cmdline component with the theme section colors of the *current* mode
 							color = function()
-								-- TEMP: Force orange to see if component coloring works
 								return { fg = "#fab387", bg = "#181825" }
 							end,
 						},
@@ -185,7 +103,7 @@ return {
 							cond = function()
 								return vim.fn.reg_recording() ~= ""
 							end,
-							color = { fg = "#f38ba8" }, -- Red color for the recording indicator
+							color = { fg = "#f38ba8" },
 						},
 						"encoding",
 						"fileformat",
@@ -205,7 +123,7 @@ return {
 			})
 
 			----------------------------------------------------------------
-			-- Keep lualine updating while typing and when mode/colors change
+			-- Refresh on cmdline changes
 			----------------------------------------------------------------
 			local function refresh()
 				pcall(require("lualine").refresh, { place = { "statusline" } })
@@ -221,27 +139,62 @@ return {
 				"ColorScheme",
 			}, {
 				callback = function()
-					update_caret_hl()
-					refresh()
+					vim.schedule(function()
+						update_caret_hl()
+						refresh()
+					end)
 				end,
 			})
 
-			-- Extra responsiveness with ext_cmdline (safe no-op if unsupported)
-			-- Skip in Neovide to avoid compatibility issues
+			-- Use ext_cmdline to hide the native cmdline (skip in Neovide)
 			if vim.ui_attach and not vim.g.neovide then
-				pcall(
-					vim.ui_attach,
-					vim.api.nvim_create_namespace("lualine_cmdline"),
-					{ ext_cmdline = true },
-					function(ev)
-						if ev == "cmdline_show" or ev == "cmdline_pos" or ev == "cmdline_hide" then
-							update_caret_hl()
-							refresh()
-						end
+				pcall(function()
+					local ns = vim.api.nvim_create_namespace("lualine_cmdline")
+					vim.ui_attach(ns, { ext_cmdline = true }, function()
 						return true
-					end
-				)
+					end)
+				end)
 			end
+
+			----------------------------------------------------------------
+			-- Workaround: Disable inccommand during :s/ to allow statusline updates
+			----------------------------------------------------------------
+			local saved_icm = nil
+			vim.api.nvim_create_autocmd("CmdlineChanged", {
+				callback = function()
+					if vim.fn.getcmdtype() == ":" then
+						local s = vim.fn.getcmdline()
+						-- Detect substitute commands early: as soon as ":s" or ":%s" is typed
+						local is_substitute = s:match("^%%?s") -- %s or s
+							or s:match("^'[<>],?'[<>]s") -- '<,'>s
+							or s:match("^%d+,%d+s") -- 1,10s
+							or s:match("^%.,%$s") -- .,$s
+
+						if is_substitute then
+							if saved_icm == nil then
+								saved_icm = vim.o.inccommand
+								vim.o.inccommand = "" -- disable live preview for statusline updates
+							end
+						else
+							-- Not a substitute command, restore inccommand
+							if saved_icm ~= nil then
+								vim.o.inccommand = saved_icm
+								saved_icm = nil
+							end
+						end
+					end
+				end,
+			})
+
+			vim.api.nvim_create_autocmd("CmdlineLeave", {
+				callback = function()
+					-- Always restore on leave
+					if saved_icm ~= nil then
+						vim.o.inccommand = saved_icm
+						saved_icm = nil
+					end
+				end,
+			})
 		end,
 	},
 }

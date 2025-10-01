@@ -21,7 +21,10 @@ opt.smartcase = true -- Don't ignore case with capitals
 -- UI cleanup
 opt.showmode = false
 opt.laststatus = 2 -- Force statusline to always show
-opt.cmdheight = vim.g.neovide and 1 or 0 -- Show cmdline in Neovide, hide in terminal
+opt.cmdheight = 0 -- Hide native cmdline (using lualine fake cmdline instead)
+
+-- Enable live preview by default (dynamically disabled for :s/ by lualine config)
+opt.inccommand = "split"
 
 -- Clipboard
 opt.clipboard = "unnamedplus" -- Use system clipboard by default
