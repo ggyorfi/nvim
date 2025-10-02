@@ -13,6 +13,14 @@ map({ "n", "i", "v" }, "<C-j>", "<C-w>j", { desc = "Move to bottom pane" })
 map({ "n", "i", "v" }, "<C-k>", "<C-w>k", { desc = "Move to top pane" })
 map({ "n", "i", "v" }, "<C-l>", "<C-w>l", { desc = "Move to right pane" })
 
+-- Normal mode
+vim.keymap.set("n", "<A-j>", ":m .+1<CR>", { desc = "Move line down" })
+vim.keymap.set("n", "<A-k>", ":m .-2<CR>", { desc = "Move line up" })
+
+-- Visual mode
+vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv", { desc = "Move selection down" })
+vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv", { desc = "Move selection up" })
+
 -- Terminal mode navigation (needs different syntax)
 map("t", "<C-h>", "<c-\\><c-n><c-w>h", { desc = "Move to left pane" })
 map("t", "<C-j>", "<c-\\><c-n><c-w>j", { desc = "Move to bottom pane" })
