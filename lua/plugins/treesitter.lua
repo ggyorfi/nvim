@@ -18,6 +18,7 @@ return {
           "json",
           "html",
           "css",
+          "toml",
         },
       })
     end,

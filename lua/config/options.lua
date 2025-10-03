@@ -12,6 +12,7 @@ opt.mouse = "a" -- Enable mouse support
 opt.tabstop = 2 -- Number of spaces tabs count for
 opt.shiftwidth = 2 -- Size of an indent
 opt.expandtab = true -- Use spaces instead of tabs
+opt.autoindent = true -- Enable auto-indenting (required for ==)
 opt.smartindent = true -- Insert indents automatically
 
 -- Search

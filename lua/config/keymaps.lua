@@ -20,6 +20,8 @@ vim.keymap.set("n", "<A-k>", ":m .-2<CR>", { desc = "Move line up" })
 -- Visual mode
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv", { desc = "Move selection down" })
 vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv", { desc = "Move selection up" })
+vim.keymap.set("v", ">", ">gv", { desc = "Indent and reselect" })
+vim.keymap.set("v", "<", "<gv", { desc = "Unindent and reselect" })
 
 -- Terminal mode navigation (needs different syntax)
 map("t", "<C-h>", "<c-\\><c-n><c-w>h", { desc = "Move to left pane" })

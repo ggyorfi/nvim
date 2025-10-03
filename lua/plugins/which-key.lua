@@ -7,6 +7,9 @@ return {
       preset = "helix",
       delay = 200,
       defaults = {},
+      win = {
+        title = false,
+      },
       spec = {
         {
           mode = { "n", "v" },
